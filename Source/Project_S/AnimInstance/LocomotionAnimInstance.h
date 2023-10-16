@@ -6,6 +6,15 @@
 #include "Animation/AnimInstance.h"
 #include "LocomotionAnimInstance.generated.h"
 
+UENUM(BlueprintType)
+enum class Movement_Input : uint8
+{
+	Forward		UMETA(DisplayName = "Forward"),
+	Right		UMETA(DisplayName = "Right"),
+	Backward	UMETA(DisplayName = "Backward"),
+	Left		UMETA(DisplayName = "Left"),
+};
+
 
 class ASantosCharacter;
 class UCharacterMovementComponent;
@@ -23,6 +32,9 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 
+	void GetDirectionAngle();
+	void GetOrientationAngle();
+	void GetIsSprint();
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "References", meta = (AllowPrivateAccess = "true"))
@@ -40,4 +52,19 @@ public :
 	bool ShouldMove;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Essential Movement Data", meta = (AllowPrivateAccess = "true"))
 	bool IsFalling;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Essential Movement Data", meta = (AllowPrivateAccess = "true"))
+	bool IsSprint;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
+	float Direction;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
+	Movement_Input E_MovementInput;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
+	float F_OrientationAngle;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
+	float R_OrientationAngle;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
+	float B_OrientationAngle;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
+	float L_OrientationAngle;
+
 };

@@ -30,5 +30,51 @@ void ULocomotionAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		ShouldMove = (GroundSpeed > 3.f && MovementComponent->GetCurrentAcceleration() != FVector::ZeroVector);
 
 		IsFalling = MovementComponent->IsFalling();
+		GetDirectionAngle();
+	}
+}
+
+void ULocomotionAnimInstance::GetDirectionAngle()
+{
+	// 방향을 구한다.
+	// CalculateDirection을 통해 2D 평면에서 두 점 사이의 각도나 방향을 계산한다.
+	FVector NewVector = FVector(Velocity.X, Velocity.Y, 0.f);
+	Direction = FRotator::NormalizeAxis(CalculateDirection(NewVector, Character->GetActorRotation()));
+
+	/*UE_LOG(LogTemp, Warning, TEXT("현재 회전값 : %f"), Direction);*/
+	if (Direction > -45.f && Direction <= 45.f)			// Direction의 회전값이 -45도와 45도 사이에 있으면 Forward방향
+	{
+		E_MovementInput = Movement_Input::Forward;
+	}
+	else if (Direction > 45.f && Direction <= 135.f)	// Direction의 회전값이 45도와 135도 사이에 있으면 Right방향
+	{
+		E_MovementInput = Movement_Input::Right;
+	}
+	else if (Direction > 135.f || Direction <= -135.f)	// Direction의 회전값이 135도와 -135도 사이에 있으면 Backward방향
+	{
+		E_MovementInput = Movement_Input::Backward;
+	}
+	else if (Direction > -135.f && Direction <= -45.f)	// Direction의 회전값이 -45도와 45도 사이에 있으면 Left방향
+	{
+		E_MovementInput = Movement_Input::Left;
+	}
+
+	GetOrientationAngle();
+	GetIsSprint();
+}
+
+void ULocomotionAnimInstance::GetOrientationAngle()
+{
+	F_OrientationAngle = Direction - 0.f;
+	R_OrientationAngle = Direction - 90.f;
+	B_OrientationAngle = Direction - 180.f;
+	L_OrientationAngle = Direction - (-90.f);
+}
+
+void ULocomotionAnimInstance::GetIsSprint()
+{
+	if (IsValid(Character))
+	{
+		IsSprint = Character->IsSprint;
 	}
 }

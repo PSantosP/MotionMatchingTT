@@ -25,7 +25,7 @@ ASantosCharacter::ASantosCharacter()
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);							// 캡슐 사이즈 초기화
 
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;										// pawn의 yaw회전을 회전하도록 설정
 	bUseControllerRotationRoll = false;
 
 
@@ -34,10 +34,11 @@ ASantosCharacter::ASantosCharacter()
 
 	GetCharacterMovement()->JumpZVelocity = 700.f;							// 점프 시 속도 값
 	GetCharacterMovement()->AirControl = 0.35f;								// 공중에서 움직임 제어 값
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;							// 캐릭터 걷기 최대 속도
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;							// 캐릭터 걷기 최대 속도
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;						// 최소 걷기 속도
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;			// 걷는 도안의 감속 설정
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.f;			// 공중에서 떨어지는 감속 설정
+	GetCharacterMovement()->bOrientRotationToMovement = false;				// 캐릭터는 이동 방향에 상관없이 항상 일정한 방향으로 향하게 설정
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CammeraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -94,6 +95,10 @@ void ASantosCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASantosCharacter::Move);
 
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASantosCharacter::Look);
+
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ASantosCharacter::Sprint);
+
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ASantosCharacter::Sprint);
 	}
 
 }
@@ -128,5 +133,16 @@ void ASantosCharacter::Look(const FInputActionValue& Value)
 	{
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void ASantosCharacter::Sprint(const FInputActionValue& Value)
+{
+	if (Controller != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("IsSprint : %s"), Value.Get<bool>() ? TEXT("true") : TEXT("false"));
+		IsSprint = Value.Get<bool>();
+
+		GetCharacterMovement()->MaxWalkSpeed = IsSprint == true ? 600.f : 300.f;
 	}
 }

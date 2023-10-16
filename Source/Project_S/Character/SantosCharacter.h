@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "SantosCharacter.generated.h"
 
+
 class USpringArmComponent;			// 카메라 셀카봉
 class UCameraComponent;				// 카메라
 class UInputMappingContext;			// 인풋매핑(실제 입력)
@@ -38,6 +39,8 @@ class PROJECT_S_API ASantosCharacter : public ACharacter
 	UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* SprintAction;
 
 public:
 	// Sets default values for this character's properties
@@ -48,6 +51,7 @@ protected:
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void Sprint(const FInputActionValue& Value);
 
 protected:
 	// Called to bind functionality to input
@@ -58,4 +62,8 @@ public:
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	bool IsSprint;
 };
