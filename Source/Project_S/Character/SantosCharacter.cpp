@@ -47,6 +47,13 @@ ASantosCharacter::ASantosCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom);
 	FollowCamera->bUsePawnControlRotation = false;							// 카메라는 같이 회전하지 않게끔 설정
+
+	// 애님 인스턴스를 불러오려고 했는데 굳이 그럴 필요가 없다는 것을 알음
+	//static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstance(TEXT("/Script/Engine.AnimBlueprint'/Game/Project_S_Content/Animations/ABP_LocomotionAnimInstance.ABP_LocomotionAnimInstance_C'"));
+	//if (AnimInstance.Succeeded())
+	//{
+	//	GetMesh()->AnimClass = AnimInstance.Class;
+	//}
 }
 
 

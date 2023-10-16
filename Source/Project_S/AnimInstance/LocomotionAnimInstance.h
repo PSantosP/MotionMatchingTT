@@ -28,7 +28,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "References", meta = (AllowPrivateAccess = "true"))
 	ASantosCharacter* Character;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "References", meta = (AllowPrivateAccess = "true"))
-	UCharacterMovementComponent* CharacterMovementComponent;
+	UCharacterMovementComponent* MovementComponent;
 
 
 public :
