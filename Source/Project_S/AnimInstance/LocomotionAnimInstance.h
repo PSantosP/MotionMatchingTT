@@ -35,6 +35,7 @@ public:
 	void GetDirectionAngle();
 	void GetOrientationAngle();
 	void GetIsSprint();
+	void GetIsCrouch();
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "References", meta = (AllowPrivateAccess = "true"))
@@ -54,6 +55,8 @@ public :
 	bool IsFalling;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Essential Movement Data", meta = (AllowPrivateAccess = "true"))
 	bool IsSprint;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Essential Movement Data", meta = (AllowPrivateAccess = "true"))
+	bool IsCrouch;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
 	float Direction;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))

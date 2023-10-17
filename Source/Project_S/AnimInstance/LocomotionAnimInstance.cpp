@@ -61,6 +61,7 @@ void ULocomotionAnimInstance::GetDirectionAngle()
 
 	GetOrientationAngle();
 	GetIsSprint();
+	GetIsCrouch();
 }
 
 void ULocomotionAnimInstance::GetOrientationAngle()
@@ -76,5 +77,14 @@ void ULocomotionAnimInstance::GetIsSprint()
 	if (IsValid(Character))
 	{
 		IsSprint = Character->IsSprint;
+	}
+}
+
+void ULocomotionAnimInstance::GetIsCrouch()
+{
+	if (IsValid(Character))
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("현재 앉은 상태 : %s"), IsCrouch ? TEXT("true") : TEXT("false"));
+		IsCrouch = Character->IsCrouch;
 	}
 }

@@ -30,7 +30,7 @@ ASantosCharacter::ASantosCharacter()
 
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;						// 캐릭터를 회전의 움직임에 맞게 회전하는지 여부					
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);			// 캐릭터의 회전 속도
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 120.0f, 0.0f);			// 캐릭터의 회전 속도
 
 	GetCharacterMovement()->JumpZVelocity = 700.f;							// 점프 시 속도 값
 	GetCharacterMovement()->AirControl = 0.35f;								// 공중에서 움직임 제어 값
@@ -40,15 +40,29 @@ ASantosCharacter::ASantosCharacter()
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.f;			// 공중에서 떨어지는 감속 설정
 	GetCharacterMovement()->bOrientRotationToMovement = false;				// 캐릭터는 이동 방향에 상관없이 항상 일정한 방향으로 향하게 설정
 
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CammeraBoom"));
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f;
+	CameraBoom->TargetArmLength = 350.0f;
 	CameraBoom->bUsePawnControlRotation = true;								// 부모가 회전 하면 같이 돌게 설정
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->bEnableCameraRotationLag = true;
+	CameraBoom->CameraLagSpeed = 15.f;
+	CameraBoom->CameraRotationLagSpeed = 20.f;
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom);
 	FollowCamera->bUsePawnControlRotation = false;							// 카메라는 같이 회전하지 않게끔 설정
+	FollowCamera->bAutoActivate = true;
 
+
+	FirstCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstCamera"));
+	FirstCamera->SetRelativeRotation(FRotator(0.f, 90.f, -90.f));
+	FirstCamera->SetRelativeLocation(FVector(5.f, 10.f, 0.f));
+	FirstCamera->SetupAttachment(GetMesh());
+	FirstCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("head"));
+	FirstCamera->bAutoActivate = false;
+	FirstCamera->bUsePawnControlRotation = true;
+	//FirstCamera->Activate(false);
 	// 애님 인스턴스를 불러오려고 했는데 굳이 그럴 필요가 없다는 것을 알음
 	//static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstance(TEXT("/Script/Engine.AnimBlueprint'/Game/Project_S_Content/Animations/ABP_LocomotionAnimInstance.ABP_LocomotionAnimInstance_C'"));
 	//if (AnimInstance.Succeeded())
@@ -99,6 +113,10 @@ void ASantosCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ASantosCharacter::Sprint);
 
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ASantosCharacter::Sprint);
+
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &ASantosCharacter::FCrouch);
+
+		EnhancedInputComponent->BindAction(CameraChangeAction, ETriggerEvent::Started, this, &ASantosCharacter::CameraChange);
 	}
 
 }
@@ -140,9 +158,51 @@ void ASantosCharacter::Sprint(const FInputActionValue& Value)
 {
 	if (Controller != nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("IsSprint : %s"), Value.Get<bool>() ? TEXT("true") : TEXT("false"));
-		IsSprint = Value.Get<bool>();
+		if (IsCrouch == false)
+		{
+			IsSprint = Value.Get<bool>();
 
-		GetCharacterMovement()->MaxWalkSpeed = IsSprint == true ? 600.f : 300.f;
+			GetCharacterMovement()->MaxWalkSpeed = IsSprint == true ? 600.f : 300.f;
+		}
+	}
+}
+
+void ASantosCharacter::FCrouch(const FInputActionValue& Value)
+{
+	if (Controller != nullptr)
+	{
+		if (IsCrouch)
+		{
+			IsCrouch = false;
+			GetCharacterMovement()->MaxWalkSpeed = 300.f;
+			UnCrouch();
+		}
+		else
+		{
+			IsCrouch = true;
+			IsSprint = false;
+			GetCharacterMovement()->MaxWalkSpeed = 250.f;
+			Crouch();
+		}
+	}
+}
+
+void ASantosCharacter::CameraChange(const FInputActionValue& Value)
+{
+	if (Controller != nullptr)
+	{
+		if (GetFirstCamera()->IsActive())
+		{
+			GetFirstCamera()->SetActive(false);
+			GetFollowCamera()->SetActive(true);
+			GetCharacterMovement()->bOrientRotationToMovement = true;
+		}
+		else
+		{
+			GetFirstCamera()->SetActive(true);
+			GetFollowCamera()->SetActive(false);
+			GetCharacterMovement()->bOrientRotationToMovement = false;
+		}
+
 	}
 }
