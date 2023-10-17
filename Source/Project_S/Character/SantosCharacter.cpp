@@ -124,7 +124,6 @@ void ASantosCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		EnhancedInputComponent->BindAction(CameraChangeAction, ETriggerEvent::Started, this, &ASantosCharacter::CameraChange);
 	}
-
 }
 
 

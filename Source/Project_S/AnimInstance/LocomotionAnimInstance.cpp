@@ -125,4 +125,5 @@ void ULocomotionAnimInstance::GetYaw()
 			DoOnceTurn = false;
 		}
 	}
+	UE_LOG(LogTemp, Warning, TEXT("TurnYaw : %f"), TurnYawOffset);
 }
