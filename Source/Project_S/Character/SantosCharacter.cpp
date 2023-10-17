@@ -37,8 +37,14 @@ ASantosCharacter::ASantosCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 300.f;							// 캐릭터 걷기 최대 속도
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;						// 최소 걷기 속도
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;			// 걷는 도안의 감속 설정
-	GetCharacterMovement()->BrakingDecelerationFalling = 1500.f;			// 공중에서 떨어지는 감속 설정
+	GetCharacterMovement()->BrakingDecelerationFalling = 0.f;			// 공중에서 떨어지는 감속 설정
 	GetCharacterMovement()->bOrientRotationToMovement = false;				// 캐릭터는 이동 방향에 상관없이 항상 일정한 방향으로 향하게 설정
+
+
+	GetCharacterMovement()->GravityScale = 1.75f;
+	GetCharacterMovement()->MaxAcceleration = 1500.f;
+	GetCharacterMovement()->CrouchedHalfHeight = 60.f;
+	GetCharacterMovement()->bUseSeparateBrakingFriction = true;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);

@@ -36,6 +36,7 @@ public:
 	void GetOrientationAngle();
 	void GetIsSprint();
 	void GetIsCrouch();
+	void GetYaw();
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "References", meta = (AllowPrivateAccess = "true"))
@@ -70,4 +71,21 @@ public :
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
 	float L_OrientationAngle;
 
+
+public:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	float TurnYaw;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	float TurnYawLastTick;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	float TurnYawChangeOver;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	float TurnYawOffset;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	bool DoOnceTurn;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	float TurnCurveValue;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	float LastTurnCurveValue;
 };

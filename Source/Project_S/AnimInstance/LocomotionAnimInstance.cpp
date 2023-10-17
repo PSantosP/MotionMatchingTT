@@ -62,6 +62,7 @@ void ULocomotionAnimInstance::GetDirectionAngle()
 	GetOrientationAngle();
 	GetIsSprint();
 	GetIsCrouch();
+	GetYaw();
 }
 
 void ULocomotionAnimInstance::GetOrientationAngle()
@@ -86,5 +87,42 @@ void ULocomotionAnimInstance::GetIsCrouch()
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("현재 앉은 상태 : %s"), IsCrouch ? TEXT("true") : TEXT("false"));
 		IsCrouch = Character->IsCrouch;
+	}
+}
+
+void ULocomotionAnimInstance::GetYaw()
+{
+	TurnYawLastTick = TurnYaw;
+	TurnYaw = Character->GetActorRotation().Yaw;
+
+	TurnYawChangeOver = TurnYaw - TurnYawLastTick;
+	
+	// 캐릭터가 이동 중이거나 떨어질 때
+	if (ShouldMove || IsFalling)
+	{
+		// 회전 오프셋 값을 0
+		TurnYawOffset = 0.0f;
+	}
+	else
+	{
+		TurnYawOffset = FMath::Clamp(TurnYawChangeOver + TurnYawOffset, 0.0f, 1.0f);
+
+		// 턴했다면
+		if (FMath::IsNearlyEqual(GetCurveValue(TEXT("IsTurn")), 1.0f, 0.01f))
+		{
+			if (DoOnceTurn == false)
+			{
+				// 현재 Distance커브값을 TurnCurveValue로 설정
+				DoOnceTurn = true;
+				TurnCurveValue = GetCurveValue(TEXT("Distance"));
+			}
+			LastTurnCurveValue = TurnCurveValue;
+			TurnCurveValue = GetCurveValue(TEXT("Distance"));
+			TurnYawOffset = TurnYawOffset - ((LastTurnCurveValue - TurnCurveValue) * (TurnYawOffset > 0.f ? -1.0f : 1.0f));
+		}
+		else
+		{
+			DoOnceTurn = false;
+		}
 	}
 }
