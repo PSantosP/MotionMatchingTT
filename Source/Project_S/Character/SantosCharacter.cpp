@@ -30,7 +30,7 @@ ASantosCharacter::ASantosCharacter()
 
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;						// 캐릭터를 회전의 움직임에 맞게 회전하는지 여부					
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 120.0f, 0.0f);			// 캐릭터의 회전 속도
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);			// 캐릭터의 회전 속도
 
 	GetCharacterMovement()->JumpZVelocity = 700.f;							// 점프 시 속도 값
 	GetCharacterMovement()->AirControl = 0.35f;								// 공중에서 움직임 제어 값

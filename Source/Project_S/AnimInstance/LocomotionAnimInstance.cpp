@@ -94,8 +94,9 @@ void ULocomotionAnimInstance::GetYaw()
 {
 	TurnYawLastTick = TurnYaw;
 	TurnYaw = Character->GetActorRotation().Yaw;
-
-	TurnYawChangeOver = TurnYaw - TurnYawLastTick;
+	//UE_LOG(LogTemp, Warning, TEXT("TurnYaw : %f"), TurnYaw);
+	//UE_LOG(LogTemp, Warning, TEXT("TurnLastTick : %f"), TurnYawLastTick);
+	TurnYawChangeOver = TurnYawLastTick - TurnYaw;
 	
 	// 캐릭터가 이동 중이거나 떨어질 때
 	if (ShouldMove || IsFalling)
@@ -105,19 +106,21 @@ void ULocomotionAnimInstance::GetYaw()
 	}
 	else
 	{
-		TurnYawOffset = FMath::Clamp(TurnYawChangeOver + TurnYawOffset, 0.0f, 1.0f);
+		//UE_LOG(LogTemp, Warning, TEXT("IsTurnGetCurveValue : %f"), GetCurveValue(TEXT("IsTurn")));
+		//UE_LOG(LogTemp, Warning, TEXT("DistanceGetCurveValue : %f"), GetCurveValue(TEXT("DistanceCurve")));
+		TurnYawOffset = FRotator::NormalizeAxis(TurnYawChangeOver + TurnYawOffset);
 
 		// 턴했다면
-		if (FMath::IsNearlyEqual(GetCurveValue(TEXT("IsTurn")), 1.0f, 0.01f))
+		if (FMath::IsNearlyEqual(GetCurveValue(TEXT("IsTurn")), 1.0f, 0.001f))
 		{
 			if (DoOnceTurn == false)
 			{
 				// 현재 Distance커브값을 TurnCurveValue로 설정
 				DoOnceTurn = true;
-				TurnCurveValue = GetCurveValue(TEXT("Distance"));
+				TurnCurveValue = GetCurveValue(TEXT("DistanceCurve"));
 			}
 			LastTurnCurveValue = TurnCurveValue;
-			TurnCurveValue = GetCurveValue(TEXT("Distance"));
+			TurnCurveValue = GetCurveValue(TEXT("DistanceCurve"));
 			TurnYawOffset = TurnYawOffset - ((LastTurnCurveValue - TurnCurveValue) * (TurnYawOffset > 0.f ? -1.0f : 1.0f));
 		}
 		else
@@ -125,5 +128,5 @@ void ULocomotionAnimInstance::GetYaw()
 			DoOnceTurn = false;
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("TurnYaw : %f"), TurnYawOffset);
+	/*UE_LOG(LogTemp, Warning, TEXT("TurnYaw : %f"), TurnYawOffset);*/
 }
