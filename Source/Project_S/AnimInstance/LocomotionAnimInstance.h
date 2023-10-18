@@ -28,6 +28,9 @@ class PROJECT_S_API ULocomotionAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 	
 public:
+
+	ULocomotionAnimInstance();
+
 	virtual void NativeInitializeAnimation() override;
 
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
@@ -37,6 +40,7 @@ public:
 	void GetIsSprint();
 	void GetIsCrouch();
 	void GetYaw();
+	UAnimMontage* SelectMontage(bool Select, bool ForwardOrRight);
 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "References", meta = (AllowPrivateAccess = "true"))
@@ -88,4 +92,13 @@ public:
 	float TurnCurveValue;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
 	float LastTurnCurveValue;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* DodgeFMontage;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* DodgeBMontage;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* DodgeRMontage;
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* DodgeLMontage;
+
 };

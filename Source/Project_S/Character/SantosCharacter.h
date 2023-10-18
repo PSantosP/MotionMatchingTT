@@ -12,6 +12,7 @@ class UCameraComponent;				// 카메라
 class UInputMappingContext;			// 인풋매핑(실제 입력)
 class UInputAction;					// 인풋액션(인풋했을 때 액션하기 위한 작업)
 struct FInputActionValue;			// 인풋값(인풋값들)
+class ULocomotionAnimInstance;		// 애님인스턴스
 
 
 
@@ -47,6 +48,10 @@ class PROJECT_S_API ASantosCharacter : public ACharacter
 	UInputAction* CrouchAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* CameraChangeAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* DodgeAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Anim, meta = (AllowPrivateAccess = "true"))
+	ULocomotionAnimInstance* AnimInstance;
 
 public:
 	// Sets default values for this character's properties
@@ -56,13 +61,21 @@ protected:
 	// Called when the game starts or when spawned
 
 	void Move(const FInputActionValue& Value);
+	void MoveEnd(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Sprint(const FInputActionValue& Value);
 	void FCrouch(const FInputActionValue& Value);
 	void CameraChange(const FInputActionValue& Value);
+	void Dodge(const FInputActionValue& Value);
+	UFUNCTION()
+	void DodgeAnimSelect(float Value, bool ForwardOrRight);
+	UFUNCTION()
+	void DodgeAnimEnded(UAnimMontage* Montage, bool bInterrupted);
 
 protected:
 	// Called to bind functionality to input
+	virtual void PostInitializeComponents() override;
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void BeginPlay() override;
@@ -77,4 +90,10 @@ public:
 	bool IsSprint;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	bool IsCrouch;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Dodge, meta = (AllowPrivateAccess = "true"))
+	bool IsDodge;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Dodge, meta = (AllowPrivateAccess = "true"))
+	float Forward;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Dodge, meta = (AllowPrivateAccess = "true"))
+	float Right;
 };

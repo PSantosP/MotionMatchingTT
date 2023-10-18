@@ -5,6 +5,30 @@
 #include "Project_S/Character/SantosCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+ULocomotionAnimInstance::ULocomotionAnimInstance()
+{
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeF(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Dodge/DiveRoll_F_Montage.DiveRoll_F_Montage'"));
+	if (DodgeF.Succeeded())
+	{
+		DodgeFMontage = DodgeF.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeB(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Dodge/DiveRoll_B_Montage.DiveRoll_B_Montage'"));
+	if (DodgeB.Succeeded())
+	{
+		DodgeBMontage = DodgeB.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeR(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Dodge/DiveRoll_R_Montage.DiveRoll_R_Montage'"));
+	if (DodgeR.Succeeded())
+	{
+		DodgeRMontage = DodgeR.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeL(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Dodge/DiveRoll_L_Montage.DiveRoll_L_Montage'"));
+	if (DodgeL.Succeeded())
+	{
+		DodgeLMontage = DodgeL.Object;
+	}
+}
+
 void ULocomotionAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
@@ -129,4 +153,32 @@ void ULocomotionAnimInstance::GetYaw()
 		}
 	}
 	/*UE_LOG(LogTemp, Warning, TEXT("TurnYaw : %f"), TurnYawOffset);*/
+}
+
+UAnimMontage* ULocomotionAnimInstance::SelectMontage(bool Select, bool ForwardOrRight)
+{
+	if (ForwardOrRight)
+	{
+		// Forward
+		if (Select)
+		{
+			return DodgeFMontage;
+		}
+		else
+		{
+			return DodgeBMontage;
+		}
+	}
+	else
+	{
+		// Right
+		if (Select)
+		{
+			return DodgeRMontage;
+		}
+		else
+		{
+			return DodgeLMontage;
+		}
+	}
 }

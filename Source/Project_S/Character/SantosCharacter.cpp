@@ -2,6 +2,8 @@
 
 
 #include "Project_S/Character/SantosCharacter.h"
+#include "Project_S/AnimInstance/LocomotionAnimInstance.h"
+
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -11,6 +13,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
+
 
 
 // 커스텀 로그 정의
@@ -101,6 +104,14 @@ void ASantosCharacter::BeginPlay()
 }
 
 
+void ASantosCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	// 애님인스턴스를 가져옴
+	AnimInstance = Cast<ULocomotionAnimInstance>(GetMesh()->GetAnimInstance());
+}
+
 // Called to bind functionality to input
 void ASantosCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -113,6 +124,7 @@ void ASantosCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASantosCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &ASantosCharacter::MoveEnd);
 
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASantosCharacter::Look);
 
@@ -123,6 +135,8 @@ void ASantosCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &ASantosCharacter::FCrouch);
 
 		EnhancedInputComponent->BindAction(CameraChangeAction, ETriggerEvent::Started, this, &ASantosCharacter::CameraChange);
+
+		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Started, this, &ASantosCharacter::Dodge);
 	}
 }
 
@@ -141,10 +155,21 @@ void ASantosCharacter::Move(const FInputActionValue& Value)
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);		// 앞의 방향을 얻음
 
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);			// 오른쪽의 방향을 얻음
-
+		Forward = MovementVector.Y;
+		Right = MovementVector.X;
 		// 이동
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
+	}
+}
+
+void ASantosCharacter::MoveEnd(const FInputActionValue& Value)
+{
+	if (Controller != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("끝"));
+		Forward = 0.0f;
+		Right = 0.0f;
 	}
 }
 
@@ -210,4 +235,36 @@ void ASantosCharacter::CameraChange(const FInputActionValue& Value)
 		}
 
 	}
+}
+
+void ASantosCharacter::Dodge(const FInputActionValue& Value)
+{
+
+	/*GetCharacterMovement()->GetMoveForward()*/
+	if (IsDodge == false && Controller != nullptr)
+	{
+		ASantosCharacter::DodgeAnimSelect(Forward, true);
+		ASantosCharacter::DodgeAnimSelect(Right, false);
+	}
+}
+
+void ASantosCharacter::DodgeAnimSelect(float Value, bool ForwardOrRight)
+{
+	if (Value == 0.f)
+	{
+
+	}
+	else
+	{
+		AnimInstance->Montage_Play(AnimInstance->SelectMontage(Value > 0.0f, ForwardOrRight));
+		AnimInstance->OnMontageEnded.AddDynamic(this, &ASantosCharacter::DodgeAnimEnded);
+		// 몽타주 재생
+		IsDodge = true;
+	}
+}
+
+
+void ASantosCharacter::DodgeAnimEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	IsDodge = false;
 }
