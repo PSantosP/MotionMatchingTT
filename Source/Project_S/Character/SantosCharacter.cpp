@@ -69,7 +69,7 @@ ASantosCharacter::ASantosCharacter()
 	FirstCamera->SetRelativeLocation(FVector(5.f, 10.f, 0.f));
 	FirstCamera->SetupAttachment(GetMesh());
 	FirstCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("head"));
-	FirstCamera->bAutoActivate = false;
+	//FirstCamera->bAutoActivate = false;
 	FirstCamera->bUsePawnControlRotation = true;
 	//FirstCamera->Activate(false);
 	// 애님 인스턴스를 불러오려고 했는데 굳이 그럴 필요가 없다는 것을 알음
@@ -181,6 +181,7 @@ void ASantosCharacter::Look(const FInputActionValue& Value)
 	{
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+		TurnRate = LookAxisVector.X;
 	}
 }
 

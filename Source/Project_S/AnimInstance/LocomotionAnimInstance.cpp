@@ -7,22 +7,22 @@
 
 ULocomotionAnimInstance::ULocomotionAnimInstance()
 {
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeF(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Dodge/DiveRoll_F_Montage.DiveRoll_F_Montage'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeF(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Unarmed/Dodge/DiveRoll_F_Montage.DiveRoll_F_Montage'"));
 	if (DodgeF.Succeeded())
 	{
 		DodgeFMontage = DodgeF.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeB(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Dodge/DiveRoll_B_Montage.DiveRoll_B_Montage'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeB(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Unarmed/Dodge/DiveRoll_B_Montage.DiveRoll_B_Montage'"));
 	if (DodgeB.Succeeded())
 	{
 		DodgeBMontage = DodgeB.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeR(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Dodge/DiveRoll_R_Montage.DiveRoll_R_Montage'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeR(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Unarmed/Dodge/DiveRoll_R_Montage.DiveRoll_R_Montage'"));
 	if (DodgeR.Succeeded())
 	{
 		DodgeRMontage = DodgeR.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeL(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Dodge/DiveRoll_L_Montage.DiveRoll_L_Montage'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> DodgeL(TEXT("/Script/Engine.AnimMontage'/Game/Project_S_Content/Animations/Unarmed/Dodge/DiveRoll_L_Montage.DiveRoll_L_Montage'"));
 	if (DodgeL.Succeeded())
 	{
 		DodgeLMontage = DodgeL.Object;
@@ -55,6 +55,12 @@ void ULocomotionAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
 		IsFalling = MovementComponent->IsFalling();
 		GetDirectionAngle();
+		GetOrientationAngle();
+		GetIsSprint();
+		GetIsCrouch();
+		GetYaw();
+		GetPitch();
+		GetTurnRate();
 	}
 }
 
@@ -63,38 +69,35 @@ void ULocomotionAnimInstance::GetDirectionAngle()
 	// 방향을 구한다.
 	// CalculateDirection을 통해 2D 평면에서 두 점 사이의 각도나 방향을 계산한다.
 	FVector NewVector = FVector(Velocity.X, Velocity.Y, 0.f);
-	Direction = FRotator::NormalizeAxis(CalculateDirection(NewVector, Character->GetActorRotation()));
+	DirectionAngle = FRotator::NormalizeAxis(CalculateDirection(NewVector, Character->GetActorRotation()));
 
 	/*UE_LOG(LogTemp, Warning, TEXT("현재 회전값 : %f"), Direction);*/
-	if (Direction > -45.f && Direction <= 45.f)			// Direction의 회전값이 -45도와 45도 사이에 있으면 Forward방향
+	if (DirectionAngle > -45.f && DirectionAngle <= 45.f)			// Direction의 회전값이 -45도와 45도 사이에 있으면 Forward방향
 	{
 		E_MovementInput = Movement_Input::Forward;
 	}
-	else if (Direction > 45.f && Direction <= 135.f)	// Direction의 회전값이 45도와 135도 사이에 있으면 Right방향
+	else if (DirectionAngle > 45.f && DirectionAngle <= 135.f)	// Direction의 회전값이 45도와 135도 사이에 있으면 Right방향
 	{
 		E_MovementInput = Movement_Input::Right;
 	}
-	else if (Direction > 135.f || Direction <= -135.f)	// Direction의 회전값이 135도와 -135도 사이에 있으면 Backward방향
+	else if (DirectionAngle > 135.f || DirectionAngle <= -135.f)	// Direction의 회전값이 135도와 -135도 사이에 있으면 Backward방향
 	{
 		E_MovementInput = Movement_Input::Backward;
 	}
-	else if (Direction > -135.f && Direction <= -45.f)	// Direction의 회전값이 -45도와 45도 사이에 있으면 Left방향
+	else if (DirectionAngle > -135.f && DirectionAngle <= -45.f)	// Direction의 회전값이 -45도와 45도 사이에 있으면 Left방향
 	{
 		E_MovementInput = Movement_Input::Left;
 	}
 
-	GetOrientationAngle();
-	GetIsSprint();
-	GetIsCrouch();
-	GetYaw();
+
 }
 
 void ULocomotionAnimInstance::GetOrientationAngle()
 {
-	F_OrientationAngle = Direction - 0.f;
-	R_OrientationAngle = Direction - 90.f;
-	B_OrientationAngle = Direction - 180.f;
-	L_OrientationAngle = Direction - (-90.f);
+	F_OrientationAngle = DirectionAngle - 0.f;
+	R_OrientationAngle = DirectionAngle - 90.f;
+	B_OrientationAngle = DirectionAngle - 180.f;
+	L_OrientationAngle = DirectionAngle - (-90.f);
 }
 
 void ULocomotionAnimInstance::GetIsSprint()
@@ -118,8 +121,7 @@ void ULocomotionAnimInstance::GetYaw()
 {
 	TurnYawLastTick = TurnYaw;
 	TurnYaw = Character->GetActorRotation().Yaw;
-	//UE_LOG(LogTemp, Warning, TEXT("TurnYaw : %f"), TurnYaw);
-	//UE_LOG(LogTemp, Warning, TEXT("TurnLastTick : %f"), TurnYawLastTick);
+
 	TurnYawChangeOver = TurnYawLastTick - TurnYaw;
 	
 	// 캐릭터가 이동 중이거나 떨어질 때
@@ -130,8 +132,6 @@ void ULocomotionAnimInstance::GetYaw()
 	}
 	else
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("IsTurnGetCurveValue : %f"), GetCurveValue(TEXT("IsTurn")));
-		//UE_LOG(LogTemp, Warning, TEXT("DistanceGetCurveValue : %f"), GetCurveValue(TEXT("DistanceCurve")));
 		TurnYawOffset = FRotator::NormalizeAxis(TurnYawChangeOver + TurnYawOffset);
 
 		// 턴했다면
@@ -152,7 +152,27 @@ void ULocomotionAnimInstance::GetYaw()
 			DoOnceTurn = false;
 		}
 	}
-	/*UE_LOG(LogTemp, Warning, TEXT("TurnYaw : %f"), TurnYawOffset);*/
+}
+
+void ULocomotionAnimInstance::GetPitch()
+{
+	if (Character != nullptr)
+	{
+		FRotator AimRotator = Character->GetBaseAimRotation();
+		FRotator ActorRotator = Character->GetActorRotation();
+		FRotator Delta = AimRotator - ActorRotator;
+		Pitch = Delta.Pitch;
+	}
+
+}
+
+void ULocomotionAnimInstance::GetTurnRate()
+{
+	if (Character != nullptr)
+	{
+		// float값을 보간해주는 역할
+		TurnDirectionAngle = FMath::FInterpTo(0.f, Character->TurnRate, GetWorld()->GetDeltaSeconds(), 10.f);
+	}
 }
 
 UAnimMontage* ULocomotionAnimInstance::SelectMontage(bool Select, bool ForwardOrRight)

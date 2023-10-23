@@ -40,6 +40,8 @@ public:
 	void GetIsSprint();
 	void GetIsCrouch();
 	void GetYaw();
+	void GetPitch();
+	void GetTurnRate();
 	UAnimMontage* SelectMontage(bool Select, bool ForwardOrRight);
 
 public:
@@ -63,7 +65,7 @@ public :
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Essential Movement Data", meta = (AllowPrivateAccess = "true"))
 	bool IsCrouch;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
-	float Direction;
+	float DirectionAngle;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
 	Movement_Input E_MovementInput;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
@@ -100,5 +102,8 @@ public:
 	UAnimMontage* DodgeRMontage;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* DodgeLMontage;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	float Pitch;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	float TurnDirectionAngle;
 };
