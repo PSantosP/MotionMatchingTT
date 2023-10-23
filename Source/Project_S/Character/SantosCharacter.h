@@ -72,6 +72,9 @@ protected:
 	UFUNCTION()
 	void DodgeAnimEnded(UAnimMontage* Montage, bool bInterrupted);
 
+
+	bool CheckUpWall();
+
 protected:
 	// Called to bind functionality to input
 	virtual void PostInitializeComponents() override;

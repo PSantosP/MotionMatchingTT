@@ -175,6 +175,7 @@ void ULocomotionAnimInstance::GetTurnRate()
 	}
 }
 
+
 UAnimMontage* ULocomotionAnimInstance::SelectMontage(bool Select, bool ForwardOrRight)
 {
 	if (ForwardOrRight)

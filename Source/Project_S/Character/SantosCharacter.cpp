@@ -49,6 +49,11 @@ ASantosCharacter::ASantosCharacter()
 	GetCharacterMovement()->CrouchedHalfHeight = 60.f;
 	GetCharacterMovement()->bUseSeparateBrakingFriction = true;
 
+	// 캐릭터가 앉을 수 있도록 설정
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = 200.f;
+
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 350.0f;
@@ -202,17 +207,15 @@ void ASantosCharacter::FCrouch(const FInputActionValue& Value)
 {
 	if (Controller != nullptr)
 	{
-		if (IsCrouch)
+		if (IsCrouch && CheckUpWall())
 		{
 			IsCrouch = false;
-			GetCharacterMovement()->MaxWalkSpeed = 300.f;
 			UnCrouch();
 		}
 		else
 		{
 			IsCrouch = true;
 			IsSprint = false;
-			GetCharacterMovement()->MaxWalkSpeed = 250.f;
 			Crouch();
 		}
 	}
@@ -268,4 +271,36 @@ void ASantosCharacter::DodgeAnimSelect(float Value, bool ForwardOrRight)
 void ASantosCharacter::DodgeAnimEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	IsDodge = false;
+}
+
+
+bool ASantosCharacter::CheckUpWall()
+{
+	FHitResult HitResult;
+	FVector Start = GetActorLocation();			// 시작 위치
+	FVector End = Start + (GetActorUpVector() * 100.f);
+	FCollisionQueryParams CollisionParams;
+
+	// 실행하려는 채널 지정 (ECollisionChannel::ECC_Visibility, ECC_PhysicsBody 등)
+	// CollisionParams.AddIgnoredActor(this); // 선택 사항: 트레이스에서 무시할 액터 추가
+
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,		// 결과를 저장할 변수
+		Start,			// 시작 위치
+		End,			// 종료 위치
+		ECC_Visibility,	// 사용할 채널
+		CollisionParams // 추가 옵션 및 무시할 액터
+	);
+
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2, 0, 1);
+
+	if (bHit == false)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
