@@ -18,6 +18,7 @@ enum class Movement_Input : uint8
 
 class ASantosCharacter;
 class UCharacterMovementComponent;
+class USoundCue;
 
 /**
  * 
@@ -42,6 +43,12 @@ public:
 	void GetYaw();
 	void GetPitch();
 	void GetTurnRate();
+
+
+public:
+	UFUNCTION(BluePrintCallable)
+	void GetAnimNotifyTrace(bool left);
+
 	UAnimMontage* SelectMontage(bool Select, bool ForwardOrRight);
 
 public:
@@ -106,4 +113,11 @@ public:
 	float Pitch;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
 	float TurnDirectionAngle;
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
+	USoundCue* LeftFootSoundCue;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
+	USoundCue* RightFootSoundCue;
+
 };

@@ -4,6 +4,9 @@
 #include "Project_S/AnimInstance/LocomotionAnimInstance.h"
 #include "Project_S/Character/SantosCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 ULocomotionAnimInstance::ULocomotionAnimInstance()
 {
@@ -27,6 +30,10 @@ ULocomotionAnimInstance::ULocomotionAnimInstance()
 	{
 		DodgeLMontage = DodgeL.Object;
 	}
+
+	LeftFootSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/WalkandRun/Left_FootFX.Left_FootFX'"));
+	RightFootSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/WalkandRun/Right_FootFX.Right_FootFX'"));
+	
 }
 
 void ULocomotionAnimInstance::NativeInitializeAnimation()
@@ -175,6 +182,50 @@ void ULocomotionAnimInstance::GetTurnRate()
 	}
 }
 
+
+
+void ULocomotionAnimInstance::GetAnimNotifyTrace(bool left)
+{
+	if (Character != nullptr)
+	{
+		TArray<FHitResult> HitResults;
+		FVector Start = Character->GetCapsuleComponent()->GetComponentLocation();	// 시작 위치
+
+		float SphereRadius = 5.f;		// 구 반지름
+
+		FVector End = Start - FVector(0.f, 0.f, 120.f);		// 스피어의 방향을 나타내는 벡터
+
+		FCollisionQueryParams CollisionParams;
+
+		bool bHit = GetWorld()->SweepMultiByChannel(
+			HitResults,			// 충돌 정보 저장
+			Start,				// 시작 위치
+			End,				// 끝 위치 (방향 벡터를 더해 구의 위치를 나타냄)
+			FQuat(),			// 회전 (기본값 사용)
+			ECC_Visibility,		// 채널 (원하는 채널로 설정
+			FCollisionShape::MakeSphere(SphereRadius),		// Sphere Trace를 위한 구체
+			CollisionParams
+			);
+
+		if (bHit)
+		{		// 디버깅을 위해 Trace를 시각적으로 표시
+			for (const FHitResult& HitResult : HitResults)
+			{
+				DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, SphereRadius, 12, FColor::Red, false, 5.0f);
+				UE_LOG(LogTemp, Warning, TEXT("몇번찍혔나?"));
+				if (left == true) UGameplayStatics::PlaySoundAtLocation(GetWorld(), LeftFootSoundCue, HitResult.Location);
+				else UGameplayStatics::PlaySoundAtLocation(GetWorld(), RightFootSoundCue, HitResult.Location);
+			}
+		}
+		else
+		{
+			FVector EndTrace = Start + FVector(0.0f, 0.0f, 1.0f);
+			DrawDebugLine(GetWorld(), Start, EndTrace, FColor::Green, false, 5.0f);
+		}
+
+
+	}
+}
 
 UAnimMontage* ULocomotionAnimInstance::SelectMontage(bool Select, bool ForwardOrRight)
 {
