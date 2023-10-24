@@ -31,9 +31,18 @@ ULocomotionAnimInstance::ULocomotionAnimInstance()
 		DodgeLMontage = DodgeL.Object;
 	}
 
-	LeftFootSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/WalkandRun/Left_FootFX.Left_FootFX'"));
-	RightFootSoundCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/WalkandRun/Right_FootFX.Right_FootFX'"));
+	NormalFootSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/WalkandRun/Left_FootFX.Left_FootFX'")));
+	NormalFootSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/WalkandRun/Right_FootFX.Right_FootFX'")));
+	GlassFootSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/TestCue.TestCue'")));
+	GlassFootSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/TestCue.TestCue'")));
+	LandSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/Land/Land_SoundFX.Land_SoundFX'")));
+	LandSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/TestCue.TestCue'")));
 	
+	USoundCue* BGMCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/StarterContent/Audio/Starter_Background_Cue.Starter_Background_Cue'"));
+	if (BGMCue)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), BGMCue, FVector::ZeroVector);
+	}
 }
 
 void ULocomotionAnimInstance::NativeInitializeAnimation()
@@ -184,19 +193,19 @@ void ULocomotionAnimInstance::GetTurnRate()
 
 
 
-void ULocomotionAnimInstance::GetAnimNotifyTrace(bool left)
+void ULocomotionAnimInstance::GetAnimNotifyTrace(bool left, bool land)
 {
 	if (Character != nullptr)
 	{
 		TArray<FHitResult> HitResults;
 		FVector Start = Character->GetCapsuleComponent()->GetComponentLocation();	// 시작 위치
 
-		float SphereRadius = 5.f;		// 구 반지름
+		float SphereRadius = 10.f;		// 구 반지름
 
 		FVector End = Start - FVector(0.f, 0.f, 120.f);		// 스피어의 방향을 나타내는 벡터
 
 		FCollisionQueryParams CollisionParams;
-
+		CollisionParams.bReturnPhysicalMaterial = true;			// 물리 머티리얼을 찾기위해 사용
 		bool bHit = GetWorld()->SweepMultiByChannel(
 			HitResults,			// 충돌 정보 저장
 			Start,				// 시작 위치
@@ -212,9 +221,53 @@ void ULocomotionAnimInstance::GetAnimNotifyTrace(bool left)
 			for (const FHitResult& HitResult : HitResults)
 			{
 				DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, SphereRadius, 12, FColor::Red, false, 5.0f);
-				UE_LOG(LogTemp, Warning, TEXT("몇번찍혔나?"));
-				if (left == true) UGameplayStatics::PlaySoundAtLocation(GetWorld(), LeftFootSoundCue, HitResult.Location, FootSoundVolume);
-				else UGameplayStatics::PlaySoundAtLocation(GetWorld(), RightFootSoundCue, HitResult.Location, FootSoundVolume);
+				if (HitResult.PhysMaterial != nullptr)
+				{
+					if (left == true && land == false)
+					{
+						switch (HitResult.PhysMaterial->SurfaceType)
+						{
+						case SurfaceType1:
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), NormalFootSoundCue[0], HitResult.Location, FootSoundVolume);
+							break;
+						case SurfaceType2:
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), GlassFootSoundCue[0], HitResult.Location, FootSoundVolume);
+							break;
+						default:
+							break;
+						}
+
+					}
+					else if (left == false && land == false)
+					{
+						switch (HitResult.PhysMaterial->SurfaceType)
+						{
+						case SurfaceType1:
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), NormalFootSoundCue[1], HitResult.Location, FootSoundVolume);
+							break;
+						case SurfaceType2:
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), GlassFootSoundCue[1], HitResult.Location, FootSoundVolume);
+							break;
+						default:
+							break;
+						}
+
+					}
+					else if (land == true)
+					{
+						switch (HitResult.PhysMaterial->SurfaceType)
+						{
+						case SurfaceType1:
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), LandSoundCue[0], HitResult.Location, FootSoundVolume);
+							break;
+						case SurfaceType2:
+							UGameplayStatics::PlaySoundAtLocation(GetWorld(), LandSoundCue[1], HitResult.Location, FootSoundVolume);
+							break;
+						default:
+							break;
+						}
+					}
+				}
 			}
 		}
 		else

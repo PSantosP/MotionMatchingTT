@@ -47,7 +47,7 @@ public:
 
 public:
 	UFUNCTION(BluePrintCallable)
-	void GetAnimNotifyTrace(bool left);
+	void GetAnimNotifyTrace(bool left, bool land);
 
 	UAnimMontage* SelectMontage(bool Select, bool ForwardOrRight);
 
@@ -116,10 +116,12 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
-	USoundCue* LeftFootSoundCue;
+	TArray<USoundCue*> NormalFootSoundCue;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
-	USoundCue* RightFootSoundCue;
+	TArray<USoundCue*> GlassFootSoundCue;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
-	float FootSoundVolume = 3.f;
+	TArray<USoundCue*> LandSoundCue;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
+	float FootSoundVolume = 2.5f;
 
 };
