@@ -119,5 +119,7 @@ public:
 	USoundCue* LeftFootSoundCue;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
 	USoundCue* RightFootSoundCue;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
+	float FootSoundVolume = 3.f;
 
 };

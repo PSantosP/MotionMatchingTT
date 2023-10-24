@@ -213,8 +213,8 @@ void ULocomotionAnimInstance::GetAnimNotifyTrace(bool left)
 			{
 				DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, SphereRadius, 12, FColor::Red, false, 5.0f);
 				UE_LOG(LogTemp, Warning, TEXT("몇번찍혔나?"));
-				if (left == true) UGameplayStatics::PlaySoundAtLocation(GetWorld(), LeftFootSoundCue, HitResult.Location);
-				else UGameplayStatics::PlaySoundAtLocation(GetWorld(), RightFootSoundCue, HitResult.Location);
+				if (left == true) UGameplayStatics::PlaySoundAtLocation(GetWorld(), LeftFootSoundCue, HitResult.Location, FootSoundVolume);
+				else UGameplayStatics::PlaySoundAtLocation(GetWorld(), RightFootSoundCue, HitResult.Location, FootSoundVolume);
 			}
 		}
 		else
