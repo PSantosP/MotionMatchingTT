@@ -6,14 +6,6 @@
 #include "Animation/AnimInstance.h"
 #include "LocomotionAnimInstance.generated.h"
 
-UENUM(BlueprintType)
-enum class Movement_Input : uint8
-{
-	Forward		UMETA(DisplayName = "Forward"),
-	Right		UMETA(DisplayName = "Right"),
-	Backward	UMETA(DisplayName = "Backward"),
-	Left		UMETA(DisplayName = "Left"),
-};
 
 
 class ASantosCharacter;
@@ -43,6 +35,7 @@ public:
 	void GetYaw();
 	void GetPitch();
 	void GetTurnRate();
+	void GetAnimationState();
 
 
 public:
@@ -71,10 +64,12 @@ public :
 	bool IsSprint;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Essential Movement Data", meta = (AllowPrivateAccess = "true"))
 	bool IsCrouch;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Essential Movement Data", meta = (AllowPrivateAccess = "true"))
+	//Animation_State E_AnimationState;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
 	float DirectionAngle;
-	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
-	Movement_Input E_MovementInput;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
+	//Movement_Input E_MovementInput;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))
 	float F_OrientationAngle;
 	UPROPERTY(VisibleAnywhere, BlueprintReadwrite, Category = "Direction", meta = (AllowPrivateAccess = "true"))

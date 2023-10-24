@@ -14,6 +14,8 @@ class UInputAction;					// 인풋액션(인풋했을 때 액션하기 위한 작
 struct FInputActionValue;			// 인풋값(인풋값들)
 class ULocomotionAnimInstance;		// 애님인스턴스
 
+class UMyEnumClass;
+
 
 
 // 커스텀 로그
@@ -50,6 +52,8 @@ class PROJECT_S_API ASantosCharacter : public ACharacter
 	UInputAction* CameraChangeAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* DodgeAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* ChangeAnimationAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim", meta = (AllowPrivateAccess = "true"))
 	ULocomotionAnimInstance* AnimInstance;
 
@@ -67,6 +71,7 @@ protected:
 	void FCrouch(const FInputActionValue& Value);
 	void CameraChange(const FInputActionValue& Value);
 	void Dodge(const FInputActionValue& Value);
+	void ChangeAnimation(const FInputActionValue& Value);
 	UFUNCTION()
 	void DodgeAnimSelect(float Value, bool ForwardOrRight);
 	UFUNCTION()
@@ -101,4 +106,9 @@ public:
 	float Right;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
 	float TurnRate;
+
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Enum", meta = (AllowPrivateAccess = "true"))
+	UMyEnumClass* EnumClass;
 };

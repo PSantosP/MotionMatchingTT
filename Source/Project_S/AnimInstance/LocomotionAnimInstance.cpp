@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "Project_S/Enum/MyEnumClass.h"
 
 ULocomotionAnimInstance::ULocomotionAnimInstance()
 {
@@ -77,6 +78,7 @@ void ULocomotionAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		GetYaw();
 		GetPitch();
 		GetTurnRate();
+		GetAnimationState();
 	}
 }
 
@@ -86,26 +88,26 @@ void ULocomotionAnimInstance::GetDirectionAngle()
 	// CalculateDirection을 통해 2D 평면에서 두 점 사이의 각도나 방향을 계산한다.
 	FVector NewVector = FVector(Velocity.X, Velocity.Y, 0.f);
 	DirectionAngle = FRotator::NormalizeAxis(CalculateDirection(NewVector, Character->GetActorRotation()));
-
-	/*UE_LOG(LogTemp, Warning, TEXT("현재 회전값 : %f"), Direction);*/
-	if (DirectionAngle > -45.f && DirectionAngle <= 45.f)			// Direction의 회전값이 -45도와 45도 사이에 있으면 Forward방향
+	if (Character->EnumClass != nullptr)
 	{
-		E_MovementInput = Movement_Input::Forward;
+		/*UE_LOG(LogTemp, Warning, TEXT("현재 회전값 : %f"), Direction);*/
+		if (DirectionAngle > -45.f && DirectionAngle <= 45.f)			// Direction의 회전값이 -45도와 45도 사이에 있으면 Forward방향
+		{
+			Character->EnumClass->SetMovementInput(Movement_Input::Forward);
+		}
+		else if (DirectionAngle > 45.f && DirectionAngle <= 135.f)	// Direction의 회전값이 45도와 135도 사이에 있으면 Right방향
+		{
+			Character->EnumClass->SetMovementInput(Movement_Input::Right);
+		}
+		else if (DirectionAngle > 135.f || DirectionAngle <= -135.f)	// Direction의 회전값이 135도와 -135도 사이에 있으면 Backward방향
+		{
+			Character->EnumClass->SetMovementInput(Movement_Input::Backward);
+		}
+		else if (DirectionAngle > -135.f && DirectionAngle <= -45.f)	// Direction의 회전값이 -45도와 45도 사이에 있으면 Left방향
+		{
+			Character->EnumClass->SetMovementInput(Movement_Input::Left);
+		}
 	}
-	else if (DirectionAngle > 45.f && DirectionAngle <= 135.f)	// Direction의 회전값이 45도와 135도 사이에 있으면 Right방향
-	{
-		E_MovementInput = Movement_Input::Right;
-	}
-	else if (DirectionAngle > 135.f || DirectionAngle <= -135.f)	// Direction의 회전값이 135도와 -135도 사이에 있으면 Backward방향
-	{
-		E_MovementInput = Movement_Input::Backward;
-	}
-	else if (DirectionAngle > -135.f && DirectionAngle <= -45.f)	// Direction의 회전값이 -45도와 45도 사이에 있으면 Left방향
-	{
-		E_MovementInput = Movement_Input::Left;
-	}
-
-
 }
 
 void ULocomotionAnimInstance::GetOrientationAngle()
@@ -189,6 +191,14 @@ void ULocomotionAnimInstance::GetTurnRate()
 		// float값을 보간해주는 역할
 		TurnDirectionAngle = FMath::FInterpTo(0.f, Character->TurnRate, GetWorld()->GetDeltaSeconds(), 10.f);
 	}
+}
+
+void ULocomotionAnimInstance::GetAnimationState()
+{
+	//if (Character != nullptr)
+	//{
+	//	E_AnimationState = Character->E_AnimationState;
+	//}
 }
 
 

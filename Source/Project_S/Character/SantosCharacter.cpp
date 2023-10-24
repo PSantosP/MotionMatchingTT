@@ -13,6 +13,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
+#include "Project_S/Enum/MyEnumClass.h"
 
 
 
@@ -115,6 +116,8 @@ void ASantosCharacter::PostInitializeComponents()
 
 	// 애님인스턴스를 가져옴
 	AnimInstance = Cast<ULocomotionAnimInstance>(GetMesh()->GetAnimInstance());
+
+	EnumClass = NewObject<UMyEnumClass>();
 }
 
 // Called to bind functionality to input
@@ -142,6 +145,8 @@ void ASantosCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(CameraChangeAction, ETriggerEvent::Started, this, &ASantosCharacter::CameraChange);
 
 		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Started, this, &ASantosCharacter::Dodge);
+
+		EnhancedInputComponent->BindAction(ChangeAnimationAction, ETriggerEvent::Started, this, &ASantosCharacter::ChangeAnimation);
 	}
 }
 
@@ -249,6 +254,24 @@ void ASantosCharacter::Dodge(const FInputActionValue& Value)
 	{
 		ASantosCharacter::DodgeAnimSelect(Forward, true);
 		ASantosCharacter::DodgeAnimSelect(Right, false);
+	}
+}
+
+void ASantosCharacter::ChangeAnimation(const FInputActionValue& Value)
+{
+	if (Controller != nullptr)
+	{
+		switch (EnumClass->GetAnimationState())
+		{
+		case Animation_State::Unarmed:
+			EnumClass->SetAnimationState(Animation_State::Pistol);
+			break;
+		case Animation_State::Pistol:
+			EnumClass->SetAnimationState(Animation_State::Unarmed);
+			break;
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("현재 "))
 	}
 }
 
