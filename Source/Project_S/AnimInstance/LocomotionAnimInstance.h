@@ -12,6 +12,17 @@ class ASantosCharacter;
 class UCharacterMovementComponent;
 class USoundCue;
 
+enum class Animation_State : uint8;
+
+UENUM(BlueprintType)
+enum class Movement_Input : uint8
+{
+	Forward		UMETA(DisplayName = "Forward"),
+	Right		UMETA(DisplayName = "Right"),
+	Backward	UMETA(DisplayName = "Backward"),
+	Left		UMETA(DisplayName = "Left"),
+};
+
 /**
  * 
  */
@@ -118,5 +129,8 @@ public:
 	TArray<USoundCue*> LandSoundCue;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Sound", meta = (AllowPrivateAccess = "true"))
 	float FootSoundVolume = 2.5f;
-
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Enum", meta = (AllowPrivateAccess = "true"))
+	Movement_Input E_MovementInput;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Enum", meta = (AllowPrivateAccess = "true"))
+	Animation_State E_AnimationState;
 };

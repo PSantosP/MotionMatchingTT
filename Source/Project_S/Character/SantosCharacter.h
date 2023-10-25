@@ -7,15 +7,19 @@
 #include "SantosCharacter.generated.h"
 
 
+UENUM(BlueprintType)
+enum class Animation_State : uint8
+{
+	Unarmed UMETA(DisplayName = "Unarmed"),
+	Pistol UMETA(DisplayName = "Pistol"),
+};
+
 class USpringArmComponent;			// 카메라 셀카봉
 class UCameraComponent;				// 카메라
 class UInputMappingContext;			// 인풋매핑(실제 입력)
 class UInputAction;					// 인풋액션(인풋했을 때 액션하기 위한 작업)
 struct FInputActionValue;			// 인풋값(인풋값들)
 class ULocomotionAnimInstance;		// 애님인스턴스
-
-class UMyEnumClass;
-
 
 
 // 커스텀 로그
@@ -106,9 +110,6 @@ public:
 	float Right;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
 	float TurnRate;
-
-
-public:
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Enum", meta = (AllowPrivateAccess = "true"))
-	UMyEnumClass* EnumClass;
+	Animation_State E_AnimationState;
 };

@@ -13,7 +13,6 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
-#include "Project_S/Enum/MyEnumClass.h"
 
 
 
@@ -47,7 +46,7 @@ ASantosCharacter::ASantosCharacter()
 
 	GetCharacterMovement()->GravityScale = 1.75f;
 	GetCharacterMovement()->MaxAcceleration = 1500.f;
-	GetCharacterMovement()->CrouchedHalfHeight = 60.f;
+	GetCharacterMovement()->SetCrouchedHalfHeight(60.f);
 	GetCharacterMovement()->bUseSeparateBrakingFriction = true;
 
 	// 캐릭터가 앉을 수 있도록 설정
@@ -116,8 +115,6 @@ void ASantosCharacter::PostInitializeComponents()
 
 	// 애님인스턴스를 가져옴
 	AnimInstance = Cast<ULocomotionAnimInstance>(GetMesh()->GetAnimInstance());
-
-	EnumClass = NewObject<UMyEnumClass>();
 }
 
 // Called to bind functionality to input
@@ -261,13 +258,15 @@ void ASantosCharacter::ChangeAnimation(const FInputActionValue& Value)
 {
 	if (Controller != nullptr)
 	{
-		switch (EnumClass->GetAnimationState())
+		switch (E_AnimationState)
 		{
 		case Animation_State::Unarmed:
-			EnumClass->SetAnimationState(Animation_State::Pistol);
+			E_AnimationState = Animation_State::Pistol;
+			AnimInstance->E_AnimationState = E_AnimationState;
 			break;
 		case Animation_State::Pistol:
-			EnumClass->SetAnimationState(Animation_State::Unarmed);
+			E_AnimationState = Animation_State::Unarmed;
+			AnimInstance->E_AnimationState = E_AnimationState;
 			break;
 		}
 
