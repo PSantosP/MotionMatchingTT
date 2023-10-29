@@ -13,7 +13,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
-
+#include "Components/TimelineComponent.h"
 
 
 // 커스텀 로그 정의
@@ -23,7 +23,7 @@ DEFINE_LOG_CATEGORY(LOG_CHARACTER);
 ASantosCharacter::ASantosCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	// PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
 
 	GetCapsuleComponent()->InitCapsuleSize(42.0f, 96.0f);							// 캡슐 사이즈 초기화
 
@@ -83,6 +83,13 @@ ASantosCharacter::ASantosCharacter()
 	//{
 	//	GetMesh()->AnimClass = AnimInstance.Class;
 	//}
+	
+
+	// Timeline 관련 설정
+	CrouchCurveFloat = nullptr;
+	Curve2 = nullptr;
+	Curve3 = nullptr;
+	LerpTimelineLength = 1.f;
 }
 
 
@@ -106,6 +113,46 @@ void ASantosCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	// 모든 커브가 존재할 때 타임라인을 설정
+	if (CrouchCurveFloat != nullptr && Curve2 != nullptr && Curve3 != nullptr)
+	{
+		// 지정한 Curve에 사용할 Callback 함수
+		FOnTimelineFloat CrouchCurve_Callback;
+		FOnTimelineVector Curve2Callback;
+		FOnTimelineLinearColor Curve3Callback;
+
+		// Timeline이 끝났을 때 실행할 Callback 함수들
+		FOnTimelineEvent LerpTimelineFinishedCallback;
+
+		// Callback 함수에 사용할 함수를 바인드
+		// 바인드 하는 함수에는 UFUNCTION 매크로가 적용되어야 함
+		CrouchCurve_Callback.BindUFunction(this, FName("CrouchCurveCallback"));
+		Curve2Callback.BindUFunction(this, FName("Curve2Callback"));
+		Curve3Callback.BindUFunction(this, FName("Curve3Callback"));
+		LerpTimelineFinishedCallback.BindUFunction(this, FName("LerpTimelineFinishedCallback"));
+
+		// Timeline에 Curve와 Curve를 사용할 Callback 함수를 추가
+		Crouch_SmoothTimeline.AddInterpFloat(CrouchCurveFloat, CrouchCurve_Callback);
+		Crouch_SmoothTimeline.AddInterpVector(Curve2, Curve2Callback);
+		Crouch_SmoothTimeline.AddInterpLinearColor(Curve3, Curve3Callback);
+
+		// Timeline을 끝낼 때 호출할 Callback 함수를 추가
+		Crouch_SmoothTimeline.SetTimelineFinishedFunc(LerpTimelineFinishedCallback);
+
+		// Timeline의 길이를 설정
+		Crouch_SmoothTimeline.SetTimelineLength(LerpTimelineLength);
+
+		//// Timeline을 실행
+		//LerpTimeline.PlayFromStart();
+	}
+}
+
+void ASantosCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	Crouch_SmoothTimeline.TickTimeline(DeltaTime);
 }
 
 
@@ -212,12 +259,14 @@ void ASantosCharacter::FCrouch(const FInputActionValue& Value)
 		if (IsCrouch && CheckUpWall())
 		{
 			IsCrouch = false;
+			Crouch_SmoothTimeline.ReverseFromEnd();
 			UnCrouch();
 		}
 		else
 		{
 			IsCrouch = true;
 			IsSprint = false;
+			Crouch_SmoothTimeline.Play();
 			Crouch();
 		}
 	}
@@ -325,4 +374,24 @@ bool ASantosCharacter::CheckUpWall()
 	{
 		return false;
 	}
+}
+
+void ASantosCharacter::CrouchCurveCallback(float Value)
+{
+	// Timeline Update문 이 여기
+	// Value가 0~1로 갈 때 350.f와 450.f값을 보간해줘서 스무스하게 움직이게끔
+	float ArmValue = FMath::Lerp(300.f, 450.f, Value);
+	GetCameraBoom()->TargetArmLength = ArmValue;
+}
+
+void ASantosCharacter::Curve2Callback()
+{
+}
+
+void ASantosCharacter::Curve3Callback()
+{
+}
+
+void ASantosCharacter::LerpTimelineFinishedCallback()
+{
 }

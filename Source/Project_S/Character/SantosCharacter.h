@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/TimelineComponent.h"
 #include "SantosCharacter.generated.h"
 
 
@@ -80,9 +81,16 @@ protected:
 	void DodgeAnimSelect(float Value, bool ForwardOrRight);
 	UFUNCTION()
 	void DodgeAnimEnded(UAnimMontage* Montage, bool bInterrupted);
-
-
 	bool CheckUpWall();
+
+
+	UFUNCTION()
+	void CrouchCurveCallback(float Value);
+	void Curve2Callback();
+	void Curve3Callback();
+	void LerpTimelineFinishedCallback();
+
+
 
 protected:
 	// Called to bind functionality to input
@@ -91,6 +99,8 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
 public:
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -108,8 +118,21 @@ public:
 	float Forward;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dodge", meta = (AllowPrivateAccess = "true"))
 	float Right;
-	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn", meta = (AllowPrivateAccess = "true"))
 	float TurnRate;
-	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Enum", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enum", meta = (AllowPrivateAccess = "true"))
 	Animation_State E_AnimationState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
+	UCurveFloat * CrouchCurveFloat;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
+	UCurveVector* Curve2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
+	UCurveLinearColor* Curve3;
+
+	UPROPERTY(Transient)
+	FTimeline Crouch_SmoothTimeline;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
+	float LerpTimelineLength;
 };

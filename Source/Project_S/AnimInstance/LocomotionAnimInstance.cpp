@@ -33,12 +33,14 @@ ULocomotionAnimInstance::ULocomotionAnimInstance()
 
 	NormalFootSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/WalkandRun/Left_FootFX.Left_FootFX'")));
 	NormalFootSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/WalkandRun/Right_FootFX.Right_FootFX'")));
-	GlassFootSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/TestCue.TestCue'")));
-	GlassFootSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/TestCue.TestCue'")));
+	GlassFootSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/WalkandRun/Left_Foot_GrassFX.Left_Foot_GrassFX'")));
+	GlassFootSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/WalkandRun/Right_Foot_GrassFX1.Right_Foot_GrassFX1'")));
 	LandSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/Land/Land_SoundFX.Land_SoundFX'")));
-	LandSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/TestCue.TestCue'")));
+	LandSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/Footsteps/Land/Land_SoundFX.Land_SoundFX'")));
+	/*LandSoundCue.Add(LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/TestCue.TestCue'")));*/
 	
-	USoundCue* BGMCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/StarterContent/Audio/Starter_Background_Cue.Starter_Background_Cue'"));
+	/*USoundCue* BGMCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/StarterContent/Audio/Starter_Background_Cue.Starter_Background_Cue'"));*/
+	USoundCue* BGMCue = LoadObject<USoundCue>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Project_S_Content/Sound/TestCue.TestCue'"));
 	if (BGMCue)
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), BGMCue, FVector::ZeroVector);
@@ -88,21 +90,39 @@ void ULocomotionAnimInstance::GetDirectionAngle()
 	FVector NewVector = FVector(Velocity.X, Velocity.Y, 0.f);
 	DirectionAngle = FRotator::NormalizeAxis(CalculateDirection(NewVector, Character->GetActorRotation()));
 	/*UE_LOG(LogTemp, Warning, TEXT("현재 회전값 : %f"), Direction);*/
-	if (DirectionAngle > -45.f && DirectionAngle <= 45.f)			// Direction의 회전값이 -45도와 45도 사이에 있으면 Forward방향
+	
+	//if (DirectionAngle > -70 && DirectionAngle <= 45.f)			// Direction의 회전값이 -45도와 45도 사이에 있으면 Forward방향
+	//{
+	//	E_MovementInput = Movement_Input::Forward;
+	//}
+	//else if (DirectionAngle > 45.f && DirectionAngle <= 135.f)	// Direction의 회전값이 45도와 135도 사이에 있으면 Right방향
+	//{
+	//	E_MovementInput = Movement_Input::Right;
+	//}
+	//else if (DirectionAngle > 135.f || DirectionAngle <= -135.f)	// Direction의 회전값이 135도와 -135도 사이에 있으면 Backward방향
+	//{
+	//	E_MovementInput = Movement_Input::Backward;
+	//}
+	//else if (DirectionAngle > -135.f && DirectionAngle <= -45.f)	// Direction의 회전값이 -45도와 45도 사이에 있으면 Left방향
+	//{
+	//	E_MovementInput = Movement_Input::Left;
+	//}
+
+	if (FMath::IsWithinInclusive(DirectionAngle, -70.f, 70.f))
 	{
 		E_MovementInput = Movement_Input::Forward;
 	}
-	else if (DirectionAngle > 45.f && DirectionAngle <= 135.f)	// Direction의 회전값이 45도와 135도 사이에 있으면 Right방향
+	else if (FMath::IsWithinInclusive(DirectionAngle, 70.f, 110.f))
 	{
 		E_MovementInput = Movement_Input::Right;
 	}
-	else if (DirectionAngle > 135.f || DirectionAngle <= -135.f)	// Direction의 회전값이 135도와 -135도 사이에 있으면 Backward방향
-	{
-		E_MovementInput = Movement_Input::Backward;
-	}
-	else if (DirectionAngle > -135.f && DirectionAngle <= -45.f)	// Direction의 회전값이 -45도와 45도 사이에 있으면 Left방향
+	else if (FMath::IsWithinInclusive(DirectionAngle, -110.f, -70.f))
 	{
 		E_MovementInput = Movement_Input::Left;
+	}
+	else
+	{
+		E_MovementInput = Movement_Input::Backward;
 	}
 }
 
@@ -160,6 +180,7 @@ void ULocomotionAnimInstance::GetYaw()
 			LastTurnCurveValue = TurnCurveValue;
 			TurnCurveValue = GetCurveValue(TEXT("DistanceCurve"));
 			TurnYawOffset = TurnYawOffset - ((LastTurnCurveValue - TurnCurveValue) * (TurnYawOffset > 0.f ? -1.0f : 1.0f));
+			UE_LOG(LogTemp, Warning, TEXT("현재 Turn 값 : %f"), TurnYawOffset);
 		}
 		else
 		{
