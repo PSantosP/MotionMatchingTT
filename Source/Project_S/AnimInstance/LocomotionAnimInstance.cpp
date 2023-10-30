@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Project_S/AnimInstance/LocomotionAnimInstance.h"
-#include "Project_S/Character/SantosCharacter.h"
+#include "AnimInstance/LocomotionAnimInstance.h"
+#include "Character/SantosCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
